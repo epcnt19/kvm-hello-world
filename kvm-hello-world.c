@@ -81,7 +81,10 @@ void vm_init(struct vm *vm, size_t mem_size)
 		exit(1);
 	}
 
+	// get api version
 	api_ver = ioctl(vm->sys_fd, KVM_GET_API_VERSION, 0);
+	printf("KVM_GET_API_VERSION : %d\n",api_ver);
+
 	if (api_ver < 0) {
 		perror("KVM_GET_API_VERSION");
 		exit(1);
@@ -93,13 +96,15 @@ void vm_init(struct vm *vm, size_t mem_size)
 		exit(1);
 	}
 
+	// create vm
 	vm->fd = ioctl(vm->sys_fd, KVM_CREATE_VM, 0);
 	if (vm->fd < 0) {
 		perror("KVM_CREATE_VM");
 		exit(1);
 	}
 
-        if (ioctl(vm->fd, KVM_SET_TSS_ADDR, 0xfffbd000) < 0) {
+	// add tss addr
+	if (ioctl(vm->fd, KVM_SET_TSS_ADDR, 0xfffbd000) < 0) {
                 perror("KVM_SET_TSS_ADDR");
 		exit(1);
 	}
